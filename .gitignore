@@ -37,7 +37,6 @@ data
 
 # Databases
 *.db
-*.sql
 
 # OS generated
 .DS_Store
