@@ -22,7 +22,7 @@ with DAG(
     project_seeds = [
         {
             "project": "jaffle_shop",
-            "seeds": ["raw_customers", "raw_payments", "raw_orders"],
+            "seeds": ["20181101_d1_0830_0900"],
         }
     ]
 
@@ -56,7 +56,7 @@ with DAG(
         schema="public",
         dbt_executable_path="/usr/local/airflow/dbt_venv/bin/dbt",
         conn_id="postgres",
-        outlets=[Dataset(f"SEED://JAFFLE_SHOP")],
+        outlets=[Dataset(f"SEED://TRAFFIC_FLOW")],
      )
 
     # Define the order of task execution
