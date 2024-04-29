@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyd
+*.pyo
+*.pyz
+*.pyzw
+*.egg-info/
+dist/
+build/
+*.egg
+*.spec
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+*.swn
+*.bak
+
+# Docker
+*.env
+
+# Logs
+logs/
+*.log
+
+# Airflow
+airflow.cfg
+webserver_config.py
+
+# Databases
+*.db
+*.sql
+
+# OS generated
+.DS_Store
+Thumbs.db
