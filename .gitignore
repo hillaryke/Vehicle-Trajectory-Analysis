@@ -23,7 +23,7 @@ build/
 *.env
 
 # Logs
-airflow/logs/
+logs/
 *.log
 
 # Airflow
@@ -31,6 +31,7 @@ airflow.cfg
 webserver_config.py
 
 # Databases
+data
 *.db
 *.sql
 
