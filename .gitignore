@@ -23,7 +23,7 @@ build/
 *.env
 
 # Logs
-logs/
+airflow/logs/
 *.log
 
 # Airflow
