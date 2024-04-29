@@ -1,4 +1,0 @@
-apache-airflow==2.2.2
-apache-airflow-providers-google==6.1.0
-providers
-kubernetes

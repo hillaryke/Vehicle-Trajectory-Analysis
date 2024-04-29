@@ -19,6 +19,10 @@ build/
 *.swn
 *.bak
 
+# Data
+**/seeds/
+**/data/
+
 # Docker
 *.env
 
@@ -30,13 +34,9 @@ logs/
 airflow.cfg
 webserver_config.py
 
-# Data files
-data
-*.csv
-**/seeds/
-
 # Databases
 *.db
+*.sql
 
 # OS generated
 .DS_Store
