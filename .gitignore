@@ -30,8 +30,12 @@ logs/
 airflow.cfg
 webserver_config.py
 
-# Databases
+# Data files
 data
+*.csv
+**/seeds/
+
+# Databases
 *.db
 *.sql
 
