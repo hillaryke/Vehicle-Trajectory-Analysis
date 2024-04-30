@@ -33,6 +33,7 @@ def _query_data():
     except Exception as e:
         print("Failed to query the database. Error: ", e)
 
+# Extract
 def _load_data():
     # create a connection to the database using sqlalchemy
     engine = create_pg_sqlalchemy_engine('airflow', 'airflow', 'postgres', '5432', 'postgres')
