@@ -4,19 +4,24 @@ from airflow.operators.bash import BashOperator
 from datetime import datetime
 from random import randint
 
+
 def _training_model():
     return randint(1, 10)
 
+
 def _choose_best_model(ti):
-    if (best_accuracy > 8):
+    accuracies = ti.xcom_pull(task_ids=["training_model_A", "training_model_B", "training_model_C"])
+    best_accuracy = max(accuracies)
+    if best_accuracy > 8:
         return "accurate"
     return "inaccurate"
 
+
 # Define the DAG
 with DAG(
-    dag_id="data_loading",
-    start_date=datetime(2024, 4, 29),
-    schedule_interval="@daily",
+        dag_id="data_loading",
+        start_date=datetime(2024, 4, 29),
+        schedule_interval="@daily",
 ) as dag:
     # Define a task to load data into the database
     # load_data = PostgresOperator(
