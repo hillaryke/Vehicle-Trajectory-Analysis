@@ -20,6 +20,19 @@ def create_postgres_connection(user, password, host, port, db):
     )
     return connection
 
+def _query_data():
+    # create a connection to the database using sqlalchemy
+    engine = create_pg_sqlalchemy_engine('airflow', 'airflow', 'postgres', '5432', 'postgres')
+
+    # Try to establish a connection and execute a SQL query
+    try:
+        with engine.connect() as connection:
+            result = connection.execute("SELECT * FROM traffic LIMIT 10")
+            for row in result:
+                print(row)
+    except Exception as e:
+        print("Failed to query the database. Error: ", e)
+
 def _load_data():
     # create a connection to the database using sqlalchemy
     engine = create_pg_sqlalchemy_engine('airflow', 'airflow', 'postgres', '5432', 'postgres')
@@ -33,7 +46,7 @@ def _load_data():
         print("Failed to connect to the database. Error: ", e)
 
     # Load data from a CSV file into a pandas DataFrame
-    data = pd.read_csv('/opt/airflow/data/data.csv')
+    data = pd.read_csv('/opt/airflow/data/test_data.csv')
 
     # Write data to the database
     data.to_sql('traffic', con=engine, if_exists='replace', index=False)
@@ -49,5 +62,12 @@ with DAG(
         python_callable=_load_data
     )
 
-    # Define the task execution order below
+    # Define task to query data from the database
+    query_data = PythonOperator(
+        task_id="query_data",
+        python_callable=_query_data
+    )
+
+    # Define the task execution order
+    load_data >> query_data
 
