@@ -51,6 +51,7 @@ with DAG(
 
     choose_best_model = BranchPythonOperator(
         task_id="choose_best_model",
+        python_callable=_choose_best_model,
     )
 
     accurate = BashOperator(
