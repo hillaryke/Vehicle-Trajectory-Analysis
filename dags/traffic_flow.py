@@ -79,6 +79,7 @@ def extract_data_main():
     print(df_track.head(20))
     print(df_trajectory.head())
 
+
 # Define the DAG
 with DAG(
         dag_id="traffic_flow",
@@ -86,30 +87,8 @@ with DAG(
         schedule_interval="@daily",
         tags=['traffic'],
 ) as dag:
-    # Define a task to read the file
-    read_file_task = PythonOperator(
-        task_id="read_file",
-        python_callable=read_file,
-        op_kwargs={'file_path': '/opt/airflow/data/test_data.csv'},
+    # Define a task to load data into the database
+    extract_data = PythonOperator(
+        task_id="extract_data",
+        python_callable=extract_data_main,
     )
-
-    # Define a task to get the maximum number of fields
-    get_max_fields_task = PythonOperator(
-        task_id="get_max_fields",
-        python_callable=get_max_fields,
-    )
-
-    # Define a task to get the track and trajectory information
-    get_track_and_trajectory_info_task = PythonOperator(
-        task_id="get_track_and_trajectory_info",
-        python_callable=get_track_and_trajectory_info,
-    )
-
-    # Define a task to create the dataframes
-    create_dataframes_task = PythonOperator(
-        task_id="create_dataframes",
-        python_callable=create_dataframes,
-    )
-
-    # Define the order of the tasks
-    [read_file_task >> get_max_fields_task >> get_track_and_trajectory_info_task] >> create_dataframes_task
