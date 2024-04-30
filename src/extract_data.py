@@ -58,7 +58,7 @@ def create_dataframes(track_info, trajectory_info, cols):
     return df_track, df_trajectory
 
 
-def load_data_main():
+def extract_data_main():
     """
     The main function that calls the other functions and prints the results.
     """
