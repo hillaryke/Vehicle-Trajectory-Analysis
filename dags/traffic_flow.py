@@ -8,6 +8,7 @@ with DAG(
         dag_id="traffic_flow",
         start_date=datetime(2024, 4, 29),
         schedule_interval="@daily",
+        tags=['traffic'],
 ) as dag:
     # Define a task to load data into the database
     load_data = PythonOperator(
