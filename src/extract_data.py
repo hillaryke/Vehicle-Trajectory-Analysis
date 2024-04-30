@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 def read_file(file_path):
     """
     This function reads a file and returns a list of lists where each list is a line from the file.
@@ -9,6 +10,7 @@ def read_file(file_path):
     with open(file_path, 'r') as file:
         lines = file.readlines()
     return [line.strip('\n').strip().strip(';').split(';') for line in lines]
+
 
 def get_max_fields(lines_as_lists):
     """
@@ -21,6 +23,7 @@ def get_max_fields(lines_as_lists):
         if len(row) > no_field_max:
             no_field_max = len(row)
     return no_field_max
+
 
 def get_track_and_trajectory_info(lines_as_lists, no_field_max):
     """
@@ -35,9 +38,10 @@ def get_track_and_trajectory_info(lines_as_lists, no_field_max):
         track_id = row[0]
         track_info.append(row[:4])
         remaining_values = row[4:]
-        trajectory_matrix = [[track_id] + remaining_values[i:i+6] for i in range(0,len(remaining_values),6)]
+        trajectory_matrix = [[track_id] + remaining_values[i:i + 6] for i in range(0, len(remaining_values), 6)]
         trajectory_info = trajectory_info + trajectory_matrix
     return track_info, trajectory_info
+
 
 def create_dataframes(track_info, trajectory_info, cols):
     """
@@ -49,9 +53,10 @@ def create_dataframes(track_info, trajectory_info, cols):
     """
     track_cols = cols[:4]
     trajectory_cols = ['track_id'] + cols[4:]
-    df_track = pd.DataFrame(data= track_info,columns=track_cols)
-    df_trajectory = pd.DataFrame(data= trajectory_info,columns=trajectory_cols)
+    df_track = pd.DataFrame(data=track_info, columns=track_cols)
+    df_trajectory = pd.DataFrame(data=trajectory_info, columns=trajectory_cols)
     return df_track, df_trajectory
+
 
 def load_data_main():
     """
@@ -62,7 +67,7 @@ def load_data_main():
     # Get the maximum number of fields
     no_field_max = get_max_fields(lines_as_lists)
     print(f"the maximum number of fields is {no_field_max}")
-    largest_n = int((no_field_max-4)/6)
+    largest_n = int((no_field_max - 4) / 6)
     print(f"the largest n = {largest_n}")
     cols = lines_as_lists.pop(0)
     # Get the track and trajectory information
