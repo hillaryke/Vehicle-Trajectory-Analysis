@@ -77,6 +77,7 @@ x-airflow-common:
     - ${AIRFLOW_PROJ_DIR:-.}/logs:/opt/airflow/logs
     - ${AIRFLOW_PROJ_DIR:-.}/config:/opt/airflow/config
     - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
+    - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/src
     # path to my data directory locally
     - ${AIRFLOW_PROJ_DIR:-.}/data:/opt/airflow/data
     # - /home/hilla/airflow/data:/opt/airflow/data
