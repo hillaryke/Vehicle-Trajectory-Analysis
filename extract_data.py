@@ -6,7 +6,6 @@ with open("../data/test_data.csv", 'r') as file:
 lines_as_lists = [line.strip('\n').strip().strip(';').split(';') for line in lines]
 len(lines_as_lists)
 
-
 no_field_max = 0
 
 for row in lines_as_lists:
