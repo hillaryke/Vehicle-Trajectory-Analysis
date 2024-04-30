@@ -33,7 +33,6 @@ webserver_config.py
 # Databases
 data
 *.db
-*.sql
 
 # OS generated
 .DS_Store
