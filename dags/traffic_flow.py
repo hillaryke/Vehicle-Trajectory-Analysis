@@ -65,7 +65,7 @@ def extract_data_main():
     The main function that calls the other functions and prints the results.
     """
     # Read the file
-    lines_as_lists = read_file("/data/test_data.csv")
+    lines_as_lists = read_file('/opt/airflow/data/test_data.csv')
     # Get the maximum number of fields
     no_field_max = get_max_fields(lines_as_lists)
     print(f"the maximum number of fields is {no_field_max}")
