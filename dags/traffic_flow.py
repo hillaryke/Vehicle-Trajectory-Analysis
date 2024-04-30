@@ -3,6 +3,7 @@ from airflow.operators.python import PythonOperator
 from datetime import datetime
 import pandas as pd
 
+
 def read_file(file_path):
     """
     This function reads a file and returns a list of lists where each list is a line from the file.
@@ -92,5 +93,3 @@ with DAG(
         task_id="extract_data",
         python_callable=extract_data_main,
     )
-
-
