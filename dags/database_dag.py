@@ -3,22 +3,40 @@ from airflow.operators.python import PythonOperator
 from sqlalchemy import create_engine
 import pandas as pd
 from datetime import datetime
+import psycopg2
 
-def create_postgres_engine(user, password, host, port, db):
+def create_pg_sqlalchemy_engine(user, password, host, port, db):
     connection_string = f'postgresql://{user}:{password}@{host}:{port}/{db}'
     engine = create_engine(connection_string)
     return engine
 
+def create_postgres_connection(user, password, host, port, db):
+    connection = psycopg2.connect(
+        dbname=db,
+        user=user,
+        password=password,
+        host=host,
+        port=port
+    )
+    return connection
+
 def _load_data():
-    # Load data into the database
-    engine = create_postgres_engine('tela', 'tela1234', 'postgres_datawarehouse', '5432', 'traffic')
+    # create a connection to the database using sqlalchemy
+    engine = create_pg_sqlalchemy_engine('airflow', 'airflow', 'postgres', '5432', 'postgres')
 
-    # Read the csv file
-    df = pd.read_csv('/opt/airflow/data/test_data.csv')
-    # Write the data from the DataFrame to the table
-    df.to_sql('traffic', engine, if_exists='replace', index=False)
+    # Try to establish a connection and execute a simple SQL query
+    try:
+        with engine.connect() as connection:
+            result = connection.execute("SELECT 1")
+            print("Connection successful. Result: ", result.scalar())
+    except Exception as e:
+        print("Failed to connect to the database. Error: ", e)
 
-    print("Loading data into the database")
+    # Load data from a CSV file into a pandas DataFrame
+    data = pd.read_csv('/opt/airflow/data/data.csv')
+
+    # Write data to the database
+    data.to_sql('traffic', con=engine, if_exists='replace', index=False)
 
 with DAG(
     dag_id="data_loading_dev",
