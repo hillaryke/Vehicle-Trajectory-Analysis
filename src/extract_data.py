@@ -53,7 +53,7 @@ def create_dataframes(track_info, trajectory_info, cols):
     df_trajectory = pd.DataFrame(data= trajectory_info,columns=trajectory_cols)
     return df_track, df_trajectory
 
-def main():
+def load_data_main():
     """
     The main function that calls the other functions and prints the results.
     """
@@ -71,6 +71,3 @@ def main():
     df_track, df_trajectory = create_dataframes(track_info, trajectory_info, cols)
     print(df_track.head(20))
     print(df_trajectory.head())
-
-if __name__ == "__main__":
-    main()
