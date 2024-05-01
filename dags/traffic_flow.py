@@ -5,6 +5,32 @@ import pandas as pd
 from sqlalchemy import create_engine
 
 
+def create_pg_sqlalchemy_engine(user, password, host, port, db):
+    connection_string = f'postgresql://{user}:{password}@{host}:{port}/{db}'
+    engine = create_engine(connection_string)
+    return engine
+
+
+def _load_data(df, table_name):
+    # create a connection to the database using sqlalchemy
+    engine = create_pg_sqlalchemy_engine('airflow', 'airflow', 'postgres', '5432', 'postgres')
+
+    # Try to establish a connection and execute a simple SQL query
+    try:
+        with engine.connect() as connection:
+            result = connection.execute("SELECT 1")
+            print("Connection successful. Result: ", result.scalar())
+    except Exception as e:
+        print("Failed to connect to the database. Error: ", e)
+
+    # Load data from a CSV file into a pandas DataFrame
+    # data = pd.read_csv('/opt/airflow/data/test_data.csv')
+
+    # Write dataFrame to the database
+    # TODO: convert the data types to the correct ones before writing to the database
+    df.to_sql(table_name, con=engine, if_exists='replace', index=False)
+
+
 def read_file(file_path):
     """
     This function reads a file and returns a list of lists where each list is a line from the file.
@@ -61,35 +87,64 @@ def create_dataframes(track_info, trajectory_info, cols):
     df_trajectory = pd.DataFrame(data=trajectory_info, columns=trajectory_cols)
     return df_vehicles, df_trajectory
 
-def create_pg_sqlalchemy_engine(user, password, host, port, db):
-    connection_string = f'postgresql://{user}:{password}@{host}:{port}/{db}'
-    engine = create_engine(connection_string)
-    return engine
+def strip_whitespace_from_columns(df):
+    """
+    This function strips whitespace from DataFrame column names.
+    :param df: The DataFrame
+    :return: The DataFrame with stripped column names
+    """
+    df.columns = df.columns.str.strip()
+    return df
 
-def _load_data(df, table_name):
-    # create a connection to the database using sqlalchemy
-    engine = create_pg_sqlalchemy_engine('airflow', 'airflow', 'postgres', '5432', 'postgres')
+def define_column_types():
+    """
+    This function defines the column types for the vehicles and trajectory DataFrames.
+    :return: The column types for the vehicles and trajectory DataFrames
+    """
+    column_types_trajectory = {
+        'track_id': 'int64',
+        'lat': 'float64',
+        'lon': 'float64',
+        'speed': 'float64',
+        'lon_acc': 'float64',
+        'lat_acc': 'float64',
+        'time': 'float64'
+    }
 
-    # Try to establish a connection and execute a simple SQL query
-    try:
-        with engine.connect() as connection:
-            result = connection.execute("SELECT 1")
-            print("Connection successful. Result: ", result.scalar())
-    except Exception as e:
-        print("Failed to connect to the database. Error: ", e)
+    column_types_vehicles = {
+        'track_id': 'int64',
+        'type': 'object',  # Assuming 'type' is a categorical variable
+        'traveled_d': 'float64',  # Assuming 'traveled_d' is distance traveled in some unit, like km
+        'avg_speed': 'float64'  # Assuming 'avg_speed'is average speed in km/h
+    }
 
-    # Load data from a CSV file into a pandas DataFrame
-    # data = pd.read_csv('/opt/airflow/data/test_data.csv')
+    return column_types_vehicles, column_types_trajectory
 
-    # Write dataFrame to the database
-    # TODO: convert the data types to the correct ones before writing to the database
-    df.to_sql(table_name, con=engine, if_exists='replace', index=False)
+def convert_df_column_types(df, column_types):
+    """
+    This function converts the column types of a DataFrame.
+    :param df: The DataFrame
+    :param column_types: The column types
+    :return: The DataFrame with converted column types
+    """
+    df = df.astype(column_types)
+    return df
 
-def convert_columns_to_correct_data_types(list_of_dataframes, column_types=None):
-    # Convert the data types of the DataFrame columns, loop through the list of DataFrames
-    for df in list_of_dataframes:
-        for column, data_type in column_types.items():
-            df[column] = df[column].astype(data_type)
+def convert_columns_to_correct_data_types(df_vehicles, df_trajectory):
+    # Strip white spaces from the columns
+    df_trajectory = strip_whitespace_from_columns(df_trajectory)
+    df_vehicles = strip_whitespace_from_columns(df_vehicles)
+
+    # Define column types
+    column_types_vehicles, column_types_trajectory = define_column_types()
+
+    # Convert to the correct data types for each column in the trajectory DataFrame
+    df_trajectory = convert_df_column_types(df_trajectory, column_types_trajectory)
+
+    # Convert to the correct data types for each column in the vehicles DataFrame
+    df_vehicles = convert_df_column_types(df_vehicles, column_types_vehicles)
+
+    return df_vehicles, df_trajectory
 
 def generate_df(file_path: str):
     # Read the file
@@ -105,22 +160,8 @@ def generate_df(file_path: str):
     # Create the dataframes
     df_vehicles, df_trajectory = create_dataframes(track_info, trajectory_info, cols)
 
-    # Define a dictionary with the correct data types for each column
-    column_types = {
-        'track_id': 'int64',
-        'lat': 'float64',
-        'lon': 'float64',
-        'speed': 'float64',
-        'lon_acc': 'float64',
-        'lat_acc': 'float64',
-        'time': 'float64'
-    }
-
-    # Convert the columns to the correct data types
-    convert_columns_to_correct_data_types([df_vehicles, df_trajectory], column_types)
-
-    print(df_vehicles.head(20))
-    print(df_trajectory.head())
+    # Convert columns to correct data types
+    df_vehicles, df_trajectory = convert_columns_to_correct_data_types(df_vehicles, df_trajectory)
 
     return df_vehicles, df_trajectory
 
