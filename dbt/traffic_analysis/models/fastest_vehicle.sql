@@ -1,6 +1,6 @@
 WITH fastest_vehicle AS (
     SELECT
-        MAX(max_speed) AS max_speed
+        MAX(max_speed)
 
     FROM {{ ref('vehicle_summary') }}
 )

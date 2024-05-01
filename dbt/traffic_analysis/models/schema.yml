@@ -26,3 +26,18 @@ models:
         tests:
           - unique
           - not_null
+
+  - name: fastest_vehicle
+    description: The vehicle that had the fastest time during the trip
+    columns:
+      - name: track_id
+        description: Primary key
+        tests:
+          - unique
+          - not_null
+
+  - name: total_vehicles_per_type
+    description: The total number of vehicles per type and their distance covered
+    columns:
+      - name: total_vehicles
+        description: Total number of vehicles
