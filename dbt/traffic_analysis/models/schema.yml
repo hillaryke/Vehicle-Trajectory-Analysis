@@ -1,0 +1,10 @@
+version: 2
+models:
+  - name: trajectory_summary
+    description: This model aggregates the max speed, min speed, max acceleration, total time during the trip, and the total distance covered during the trip.
+    columns:
+      - name: track_id
+        description: Primary key
+        tests:
+          - unique
+          - not_null
