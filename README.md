@@ -3,6 +3,13 @@
 ## Project Overview
 This project aims to analyze vehicle trajectories using SQL and Python. The analysis includes calculating the maximum speed, minimum speed, fastest time, and total distance traveled for each vehicle. The project also uses dbt for data transformation and lineage graph generation.
 
+### Data Source
+pNEUMA is an open large-scale dataset of naturalistic trajectories of half a million vehicles that have been collected by a swarm of drones and static roadside cameras in the congested downtown area of Athens, Greece.
+
+
+The vehicle trajectory data is extracted from analyzing traffic footage.
+Each file for a single (area, date, time) is ~87 MB data.
+
 ## Tech Stack
 
 ### PostgreSQL
