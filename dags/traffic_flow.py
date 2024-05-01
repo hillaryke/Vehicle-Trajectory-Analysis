@@ -103,7 +103,7 @@ def generate_df(file_path: str):
     return df_vehicles, df_trajectory
 
 
-def extract_data_and_load():
+def extract_and_load_data():
     # Hard code the file path but TODO: make this to read file name dynamically
     df_vehicles, df_trajectory = generate_df('/opt/airflow/data/test_data.csv')
 
@@ -121,6 +121,6 @@ with DAG(
 ) as dag:
     # Define a task to load data into the database
     extract_data = PythonOperator(
-        task_id="extract_data",
-        python_callable=extract_data_and_load,
+        task_id="extract_and_load_data",
+        python_callable=extract_and_load_data,
     )
