@@ -82,6 +82,7 @@ def _load_data(df, table_name):
     # data = pd.read_csv('/opt/airflow/data/test_data.csv')
 
     # Write dataFrame to the database
+    # TODO: convert the data types to the correct ones before writing to the database
     df.to_sql(table_name, con=engine, if_exists='replace', index=False)
 
 def generate_df(file_path: str):
