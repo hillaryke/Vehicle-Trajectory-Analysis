@@ -8,3 +8,21 @@ models:
         tests:
           - unique
           - not_null
+
+  - name: vehicle_summary
+    description: This model aggregates the max speed, min speed, fastest time, total time during the trip covered during the trip.
+    columns:
+      - name: track_id
+        description: Primary key
+        tests:
+          - unique
+          - not_null
+
+  - name: full_summary
+    description: This model aggregates the max speed, min speed, max acceleration, total time during the trip, and the total distance covered during the trip.
+    columns:
+      - name: track_id
+        description: Primary key
+        tests:
+          - unique
+          - not_null
