@@ -85,6 +85,12 @@ def _load_data(df, table_name):
     # TODO: convert the data types to the correct ones before writing to the database
     df.to_sql(table_name, con=engine, if_exists='replace', index=False)
 
+def convert_columns_to_correct_data_types(list_of_dataframes, column_types=None):
+    # Convert the data types of the DataFrame columns, loop through the list of DataFrames
+    for df in list_of_dataframes:
+        for column, data_type in column_types.items():
+            df[column] = df[column].astype(data_type)
+
 def generate_df(file_path: str):
     # Read the file
     lines_as_lists = read_file(file_path)
@@ -98,6 +104,21 @@ def generate_df(file_path: str):
     track_info, trajectory_info = get_track_and_trajectory_info(lines_as_lists, no_field_max)
     # Create the dataframes
     df_vehicles, df_trajectory = create_dataframes(track_info, trajectory_info, cols)
+
+    # Define a dictionary with the correct data types for each column
+    column_types = {
+        'track_id': 'int64',
+        'lat': 'float64',
+        'lon': 'float64',
+        'speed': 'float64',
+        'lon_acc': 'float64',
+        'lat_acc': 'float64',
+        'time': 'float64'
+    }
+
+    # Convert the columns to the correct data types
+    convert_columns_to_correct_data_types([df_vehicles, df_trajectory], column_types)
+
     print(df_vehicles.head(20))
     print(df_trajectory.head())
 
