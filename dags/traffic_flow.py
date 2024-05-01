@@ -2,6 +2,7 @@ from airflow import DAG
 from airflow.operators.python import PythonOperator
 from datetime import datetime
 import pandas as pd
+from sqlalchemy import create_engine
 
 
 def read_file(file_path):
@@ -60,13 +61,32 @@ def create_dataframes(track_info, trajectory_info, cols):
     df_trajectory = pd.DataFrame(data=trajectory_info, columns=trajectory_cols)
     return df_track, df_trajectory
 
+def create_pg_sqlalchemy_engine(user, password, host, port, db):
+    connection_string = f'postgresql://{user}:{password}@{host}:{port}/{db}'
+    engine = create_engine(connection_string)
+    return engine
 
-def extract_data_main():
-    """
-    The main function that calls the other functions and prints the results.
-    """
+def _load_data(df):
+    # create a connection to the database using sqlalchemy
+    engine = create_pg_sqlalchemy_engine('airflow', 'airflow', 'postgres', '5432', 'postgres')
+
+    # Try to establish a connection and execute a simple SQL query
+    try:
+        with engine.connect() as connection:
+            result = connection.execute("SELECT 1")
+            print("Connection successful. Result: ", result.scalar())
+    except Exception as e:
+        print("Failed to connect to the database. Error: ", e)
+
+    # Load data from a CSV file into a pandas DataFrame
+    # data = pd.read_csv('/opt/airflow/data/test_data.csv')
+
+    # Write dataFrame to the database
+    df.to_sql('traffic', con=engine, if_exists='replace', index=False)
+
+def generate_df(file_path: str):
     # Read the file
-    lines_as_lists = read_file('/opt/airflow/data/test_data.csv')
+    lines_as_lists = read_file(file_path)
     # Get the maximum number of fields
     no_field_max = get_max_fields(lines_as_lists)
     print(f"the maximum number of fields is {no_field_max}")
@@ -79,6 +99,13 @@ def extract_data_main():
     df_track, df_trajectory = create_dataframes(track_info, trajectory_info, cols)
     print(df_track.head(20))
     print(df_trajectory.head())
+
+    return df_track, df_trajectory
+
+
+def extract_data_main():
+    # Hard code the file path but TODO: make this to read file name dynamically
+    df_track, df_trajectory = generate_df('/opt/airflow/data/test_data.csv')
 
 
 # Define the DAG
