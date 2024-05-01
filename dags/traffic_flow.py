@@ -57,16 +57,16 @@ def create_dataframes(track_info, trajectory_info, cols):
     """
     track_cols = cols[:4]
     trajectory_cols = ['track_id'] + cols[4:]
-    df_track = pd.DataFrame(data=track_info, columns=track_cols)
+    df_vehicles = pd.DataFrame(data=track_info, columns=track_cols)
     df_trajectory = pd.DataFrame(data=trajectory_info, columns=trajectory_cols)
-    return df_track, df_trajectory
+    return df_vehicles, df_trajectory
 
 def create_pg_sqlalchemy_engine(user, password, host, port, db):
     connection_string = f'postgresql://{user}:{password}@{host}:{port}/{db}'
     engine = create_engine(connection_string)
     return engine
 
-def _load_data(df):
+def _load_data(df, table_name):
     # create a connection to the database using sqlalchemy
     engine = create_pg_sqlalchemy_engine('airflow', 'airflow', 'postgres', '5432', 'postgres')
 
@@ -82,7 +82,7 @@ def _load_data(df):
     # data = pd.read_csv('/opt/airflow/data/test_data.csv')
 
     # Write dataFrame to the database
-    df.to_sql('traffic', con=engine, if_exists='replace', index=False)
+    df.to_sql(table_name, con=engine, if_exists='replace', index=False)
 
 def generate_df(file_path: str):
     # Read the file
@@ -96,16 +96,20 @@ def generate_df(file_path: str):
     # Get the track and trajectory information
     track_info, trajectory_info = get_track_and_trajectory_info(lines_as_lists, no_field_max)
     # Create the dataframes
-    df_track, df_trajectory = create_dataframes(track_info, trajectory_info, cols)
-    print(df_track.head(20))
+    df_vehicles, df_trajectory = create_dataframes(track_info, trajectory_info, cols)
+    print(df_vehicles.head(20))
     print(df_trajectory.head())
 
-    return df_track, df_trajectory
+    return df_vehicles, df_trajectory
 
 
-def extract_data_main():
+def extract_data_and_load():
     # Hard code the file path but TODO: make this to read file name dynamically
-    df_track, df_trajectory = generate_df('/opt/airflow/data/test_data.csv')
+    df_vehicles, df_trajectory = generate_df('/opt/airflow/data/test_data.csv')
+
+    # Load data into the database
+    _load_data(df_vehicles, 'vehicles')
+    _load_data(df_trajectory, 'trajectories')
 
 
 # Define the DAG
@@ -118,5 +122,5 @@ with DAG(
     # Define a task to load data into the database
     extract_data = PythonOperator(
         task_id="extract_data",
-        python_callable=extract_data_main,
+        python_callable=extract_data_and_load,
     )
